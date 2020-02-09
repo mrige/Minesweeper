@@ -3,7 +3,8 @@ from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .serializers import GameSerializer, BoardSerializer
-
+from .views import generate_mines
+import uuid
 
 # class GameViewSet(viewsets.ModelViewSet):
 #       queryset = Game.objects.all()
@@ -13,25 +14,33 @@ from .serializers import GameSerializer, BoardSerializer
 #     serializer_class = GameSerializer
 
 
-class GameViewSet(viewsets.ViewSet):
+class GameViewSet(viewsets.ModelViewSet):
+    queryset = Game.objects.all()
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = GameSerializer
 
     @action(detail=False, methods=['get'])
-    def game(self, request):
-        print("hello")
+    def get_game(self, request, game_id=None):
         queryset = Game.objects.all()
 
         serializer = GameSerializer(queryset, many=True)
-        print(serializer)
         return Response(serializer.data)
 
     @action(detail=False, methods=['post'])
     def create_game(self, request):
-        game = Game(board_size=request.data["board_size"])
-        date = game.save()
-        print(date)
+        id = uuid.uuid4()
+        game = Game(game_id=id,
+                    board_size=request.data["board_size"])
 
-        # print(request.data["board_size"])
-        return Response("request.body")
+        game.save()
+
+        mine_location = generate_mines(game, request.data["board_size"])
+
+        Board.objects.bulk_create(mine_location)
+        serializer = GameSerializer(game, many=False)
+        return Response(serializer.data)
 
 
 class BoardViewSet(viewsets.ModelViewSet):
@@ -40,3 +49,35 @@ class BoardViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = BoardSerializer
+
+    lookup_field = 'game_id'
+
+    @action(detail=False, methods=['get'])
+    def get_board(self, request, game_id=None):
+        if(game_id):
+            queryset = Board.objects.filter(game_id=game_id)
+            serializer = BoardSerializer(queryset, many=True)
+            return Response(serializer.data)
+        else:
+            queryset = Board.objects.all()
+            serializer = BoardSerializer(queryset, many=True)
+            return Response(serializer.data)
+
+    @action(detail=False, methods=['post'])
+    def mark_board(self, request):
+        curr_game = Game.objects.get(game_id=request.data["game_id"])
+        is_mine = Board.objects.filter(game_id=curr_game,
+                                       x_coord=request.data["x_coord"],
+                                       y_coord=request.data["y_coord"], is_mine=True)
+
+        if(is_mine):
+            return Response("game over")
+        else:
+            tile = Board(game_id=curr_game, x_coord=request.data["x_coord"],
+                         y_coord=request.data["y_coord"],
+                         value="x",
+                         checked=request.data["disabled"])
+            tile.save()
+            serializer = BoardSerializer(tile, many=False)
+
+            return Response(serializer.data)

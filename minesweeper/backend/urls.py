@@ -8,5 +8,7 @@ urlpatterns = router.urls
 """
 
 router = routers.DefaultRouter()
-router.register(r"", GameViewSet, "game")
+router.register("game", GameViewSet, "game")
+router.register("board", BoardViewSet, "board")
 urlpatterns = router.urls
+

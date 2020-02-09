@@ -8,11 +8,10 @@ class App extends Component {
     return (
       <div className="container">
         <Fragment>
-          <Game/>
+          <Game />
         </Fragment>
       </div>
     );
   }
 }
-
-ReactDOM.render(<App />, document.getElementById("app"));
+export default App;
