@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import GameGrid from "./GameGrid";
+import axios from "axios";
 
 export class Game extends Component {
   state = {
     size: 0,
-    board: [],
     play: false
   };
 
@@ -12,12 +12,17 @@ export class Game extends Component {
 
   onSubmit = e => {
     e.preventDefault();
-    const {size } = this.state;
-    const temp = Array(size)
-      .fill("")
-      .map(row => new Array(size).fill(""));
-    this.setState({ board: temp, play: true });
+    const { size } = this.state;
+    axios.post("/api/game/", { board_size: size }).then(res => {
+      console.log(res);
+    });
   };
+
+  componentDidMount() {
+    axios.get("/api/game/").then(res => {
+      //console.log(res.data);
+    });
+  }
 
   render() {
     const { size, board, play } = this.state;
