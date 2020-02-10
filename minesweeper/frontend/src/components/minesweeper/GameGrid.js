@@ -49,27 +49,31 @@ export class GameGrid extends Component {
   handleClick = (x, y, e) => {
     e.preventDefault();
     console.log(e.type);
-    params = {};
+    const id = this.props.game_id
+      ? this.state.game_id
+      : this.props.match.params.id;
+
+    let params = {};
     if (e.type === "click") {
       params = {
         game_id: id,
         x_coord: x,
         y_coord: y,
+        is_flagged : false,
         disabled: true
       };
     }
-    if (e.type === "contextMenu") {
+    if (e.type === "contextmenu") {
       params = {
         game_id: id,
         x_coord: x,
         y_coord: y,
-        is_flagged: true,
+        is_flagged : true,
         disabled: true
       };
     }
-    const id = this.props.game_id
-      ? this.state.game_id
-      : this.props.match.params.id;
+
+    console.log(params, e.type);
 
     axios.post("api/board/mark_board/", params).then(res => {
       if (res.data === "game over") {
@@ -78,7 +82,9 @@ export class GameGrid extends Component {
         });
       } else {
         let temp = this.state.board;
-        temp[res.data.x_coord][res.data.y_coord] = res.data.mine_count;
+        temp[res.data.x_coord][res.data.y_coord] = res.data.is_flagged
+          ? "f"
+          : res.data.mine_count;
         this.setState({
           board: [...temp]
         });

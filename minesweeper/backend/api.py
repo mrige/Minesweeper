@@ -13,7 +13,7 @@ class GameViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = GameSerializer
-    
+
     @action(detail=False, methods=['get'])
     def get_game(self, request, game_id=None):
         queryset = Game.objects.all()
@@ -69,14 +69,19 @@ class BoardViewSet(viewsets.ModelViewSet):
                                        x_coord=request.data["x_coord"],
                                        y_coord=request.data["y_coord"], is_mine=True)
 
-        if(is_mine):
+        is_flagged = request.data["is_flagged"]
+        if(is_mine and not is_flagged):
             return Response("game over")
         else:
             board = Board.objects.filter(game_id=curr_game,
                                          x_coord=request.data["x_coord"],
                                          y_coord=request.data["y_coord"]).first()
             if(board):
-                board.checked = request.data["disabled"]
+                if(is_flagged):
+                    board.is_flagged = is_flagged
+                else:
+                    board.checked = request.data["disabled"]
+                    board.is_flagged = is_flagged
                 board.save()
                 serializer = BoardSerializer(board, many=False)
                 return Response(serializer.data)

@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Game(models.Model):
-    game_id = models.CharField(primary_key=True, max_length=50)
+    game_id = models.CharField(primary_key=True, max_length=60)
     board_size = models.IntegerField()
     finished = models.BooleanField(default=False)
     win = models.BooleanField(default=False)
@@ -37,4 +37,4 @@ class Board(models.Model):
         return self.mine_count > 0
 
     def reveal(self):
-        self.checked = True;
+        self.checked = True
