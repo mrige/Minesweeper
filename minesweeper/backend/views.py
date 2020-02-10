@@ -29,7 +29,7 @@ def generate_mines(id, size):
     new_board.extend(mine_location)
     new_board.extend(count_list)
 
-    return new_board
+    return new_board, num_mines
 
 
 def generate_mine_count(id, mine_coordinate, num_mines, size):

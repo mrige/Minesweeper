@@ -46,54 +46,63 @@ export class GameGrid extends Component {
     return game_board;
   };
 
-  handleClick = (x, y) => {
-    console.log({ x: x, y: y });
+  handleClick = (x, y, e) => {
+    e.preventDefault();
+    console.log(e.type);
     const id = this.props.game_id
       ? this.state.game_id
       : this.props.match.params.id;
-    axios
-      .post("api/board/mark_board/", {
+
+    let params = {};
+    if (e.type === "click") {
+      params = {
         game_id: id,
         x_coord: x,
         y_coord: y,
+        is_flagged : false,
         disabled: true
-      })
-      .then(res => {
-        console.log({ res: res });
-        if (res.data === "game over") {
-          this.setState({
-            game_over: true
-          });
-        } else {
-          let temp = this.state.board;
-          temp[res.data.x_coord][res.data.y_coord] = res.data.mine_count;
-          this.setState({
-            board: [...temp]
-          });
-        }
-      });
+      };
+    }
+    if (e.type === "contextmenu") {
+      params = {
+        game_id: id,
+        x_coord: x,
+        y_coord: y,
+        is_flagged : true,
+        disabled: true
+      };
+    }
 
-    console.log(this.props);
-    console.log(this.state);
+    console.log(params, e.type);
+
+    axios.post("api/board/mark_board/", params).then(res => {
+      if (res.data === "game over") {
+        this.setState({
+          game_over: true
+        });
+      } else {
+        let temp = this.state.board;
+        temp[res.data.x_coord][res.data.y_coord] = res.data.is_flagged
+          ? "f"
+          : res.data.mine_count;
+        this.setState({
+          board: [...temp]
+        });
+      }
+    });
   };
 
   componentDidMount() {
-    console.log(this.props);
-
     const id = this.props.game_id
       ? this.props.game_id
       : this.props.match.params.id;
 
     this.props.game_id
       ? axios.get("/api/game/" + id + "/").then(res => {
-          console.log({ res: res });
-
           const board = this.generate_board(res.data["board_size"]);
           this.setState({ board: board, game_id: this.props.game_id });
         })
       : axios.get("/api/board/?game_id=" + id).then(res => {
-          console.log({ res: res });
-
           const board = this.generate_board(res.data["board_size"]);
           this.setState({ board: board, game_id: this.props.game_id });
         });
@@ -119,7 +128,7 @@ export class GameGrid extends Component {
                         value={n}
                         key={col}
                         disable={this.state.disable}
-                        handleClick={e => this.handleClick(row, col)}
+                        handleClick={e => this.handleClick(row, col, e)}
                       />
                     );
                   })}
@@ -138,8 +147,8 @@ export class GameGrid extends Component {
             aria-describedby="server-modal-description"
           >
             <div style={styles.paper}>
-              <h2 id="server-modal-title">Game Over</h2>
-              <p id="server-modal-description">Refresh Page to Play Again</p>
+              <h2>Game Over</h2>
+              <p>Refresh Page to Play Again</p>
               <Button
                 color="secondary"
                 onClick={e => window.location.reload(false)}

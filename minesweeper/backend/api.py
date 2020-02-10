@@ -13,7 +13,7 @@ class GameViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = GameSerializer
-    
+
     @action(detail=False, methods=['get'])
     def get_game(self, request, game_id=None):
         queryset = Game.objects.all()
@@ -27,17 +27,17 @@ class GameViewSet(viewsets.ModelViewSet):
         game = Game(game_id=id,
                     board_size=request.data["board_size"])
 
+        mine_location, mine_count = generate_mines(
+            game, request.data["board_size"])
+        game.set_mine_count(mine_count)
         game.save()
-
-        mine_location = generate_mines(game, request.data["board_size"])
-
         Board.objects.bulk_create(mine_location)
         serializer = GameSerializer(game, many=False)
         return Response(serializer.data)
 
 
 class BoardViewSet(viewsets.ModelViewSet):
-    queryset = Board.objects.all().first()
+    queryset = Board.objects.all()
     permission_classes = [
         permissions.AllowAny
     ]
@@ -69,14 +69,32 @@ class BoardViewSet(viewsets.ModelViewSet):
                                        x_coord=request.data["x_coord"],
                                        y_coord=request.data["y_coord"], is_mine=True)
 
+        is_flagged = request.data["is_flagged"]
         if(is_mine):
-            return Response("game over")
+            if (not is_flagged):
+                return Response("game over")
+            else:
+                mine = is_mine.first()
+                mine.is_flagged = is_flagged
+                curr_game.increase_correct_flag_count()
+                curr_game.save()
+                mine.save()
+                winner = curr_game.player_won()
+                if(winner):
+                    print("win")
+                serializer = BoardSerializer(mine, many=False)
+                return Response(serializer.data)
+
         else:
             board = Board.objects.filter(game_id=curr_game,
                                          x_coord=request.data["x_coord"],
                                          y_coord=request.data["y_coord"]).first()
             if(board):
-                board.checked = request.data["disabled"]
+                if(is_flagged):
+                    board.is_flagged = is_flagged
+                else:
+                    board.checked = request.data["disabled"]
+                    board.is_flagged = is_flagged
                 board.save()
                 serializer = BoardSerializer(board, many=False)
                 return Response(serializer.data)
