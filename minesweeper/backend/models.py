@@ -14,6 +14,7 @@ class Board(models.Model):
     x_coord = models.IntegerField()
     y_coord = models.IntegerField()
     is_mine = models.BooleanField(default=False)
+    is_flagged = models.BooleanField(default=False)
     mine_count = models.IntegerField(default=0)
     value = models.CharField(max_length=1)
     checked = models.BooleanField(default=False)

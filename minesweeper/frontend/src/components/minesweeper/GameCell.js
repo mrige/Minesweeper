@@ -4,7 +4,7 @@ import { Button } from "@material-ui/core";
 const GameCell = props => {
   return (
     <Button
-      onClick={props.handleClick}
+      onContextMenu={props.handleClick}
       variant="contained"
       color="secondary"
       size="small"
