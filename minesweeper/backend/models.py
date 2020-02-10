@@ -31,3 +31,9 @@ class Board(models.Model):
 
     def increase_mine_count(self):
         self.mine_count = self.mine_count + 1
+
+    def is_number(self):
+        return self.mine_count > 0
+
+    def reveal(self):
+        self.checked = True;

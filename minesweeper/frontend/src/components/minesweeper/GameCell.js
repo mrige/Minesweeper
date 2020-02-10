@@ -6,15 +6,17 @@ const GameCell = props => {
     <Button
       onClick={props.handleClick}
       variant="contained"
-      color="default"
+      color="secondary"
       size="small"
       style={{
         maxWidth: "30px",
         maxHeight: "30px",
         minWidth: "30px",
-        minHeight: "30px"
+        minHeight: "30px",
+        border: "1px solid"
       }}
-      disabled = {props.disable}
+      disabled={props.disable}
+      disableElevation
     >
       {props.value}
     </Button>

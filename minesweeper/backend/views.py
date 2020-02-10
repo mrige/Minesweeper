@@ -7,7 +7,7 @@ import math
 def generate_mines(id, size):
     num_mines = 0
     mine_location = []
-    num_mines = int((math.pow(size, 2))/3)
+    num_mines = int((math.pow(size, 2))/4)
     mine_coordinate = []
     x = 0
     y = 0
@@ -28,9 +28,7 @@ def generate_mines(id, size):
     new_board = []
     new_board.extend(mine_location)
     new_board.extend(count_list)
-    print(len(new_board))
-    print(len(count_list))
-    print(len(mine_location))
+
     return new_board
 
 
@@ -70,3 +68,23 @@ def get_neighbours(xcoord, ycoord, size):
     print(neigbours_coord)
 
     return neigbours_coord
+
+
+def clear_free_space(x, y, size, board_coordinates, board):
+    neighbours = get_neighbours(x, y, size)
+    cleared_cell = []
+    for neighbour in neighbours:
+
+        is_number_cell = [[neighbour[0]][neighbour[1]]] in board_coordinates
+        if(is_number_cell):
+            index = board_coordinates.index([[neighbour[0], neighbour[1]]])
+            cell = board[index]
+            is_number = cell.is_number()
+            cell.reveal()
+            cleared_cell.append(cell)
+            if(is_number):
+
+                return cleared_cell
+            else:
+                cell.reveal()
+                clear_free_space(neighbour[0], neighbour[0])

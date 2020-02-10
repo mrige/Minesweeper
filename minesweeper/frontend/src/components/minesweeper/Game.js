@@ -56,9 +56,6 @@ export class Game extends Component {
                 value={this.state.size}
                 onChange={this.handleChange}
               >
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
                 <MenuItem value={5}>Baby Mode</MenuItem>
                 <MenuItem value={10}>Easy</MenuItem>
                 <MenuItem value={20}>Medium</MenuItem>
@@ -67,7 +64,6 @@ export class Game extends Component {
               <Button
                 fullWidth
                 color="secondary"
-                variant="contained"
                 style={styles.btn}
                 type="submit"
               >

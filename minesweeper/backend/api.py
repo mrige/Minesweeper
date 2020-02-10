@@ -6,13 +6,6 @@ from .serializers import GameSerializer, BoardSerializer
 from .views import generate_mines
 import uuid
 
-# class GameViewSet(viewsets.ModelViewSet):
-#       queryset = Game.objects.all()
-#     permission_classes = [
-#         permissions.AllowAny
-#     ]
-#     serializer_class = GameSerializer
-
 
 class GameViewSet(viewsets.ModelViewSet):
     queryset = Game.objects.all()
@@ -20,7 +13,7 @@ class GameViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = GameSerializer
-    print("kbcjSHBDcbjsdbcvujbsDUbuiBcjuhASBVkuc")
+    
     @action(detail=False, methods=['get'])
     def get_game(self, request, game_id=None):
         queryset = Game.objects.all()
@@ -44,13 +37,19 @@ class GameViewSet(viewsets.ModelViewSet):
 
 
 class BoardViewSet(viewsets.ModelViewSet):
-    queryset = Board.objects.all()
+    queryset = Board.objects.all().first()
     permission_classes = [
         permissions.AllowAny
     ]
     serializer_class = BoardSerializer
 
     lookup_field = 'game_id'
+
+    def get(self, request, game_id=None):
+        print(game_id)
+        if(game_id):
+            serializer = BoardSerializer(self.queryset, many=True)
+            return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
     def get_board(self, request, game_id=None):
