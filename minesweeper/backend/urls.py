@@ -11,4 +11,3 @@ router = routers.DefaultRouter()
 router.register("game", GameViewSet, "game")
 router.register("board", BoardViewSet, "board")
 urlpatterns = router.urls
-

@@ -20,11 +20,11 @@ class GameViewSet(viewsets.ModelViewSet):
         permissions.AllowAny
     ]
     serializer_class = GameSerializer
-
+    print("kbcjSHBDcbjsdbcvujbsDUbuiBcjuhASBVkuc")
     @action(detail=False, methods=['get'])
     def get_game(self, request, game_id=None):
         queryset = Game.objects.all()
-
+        print(game_id)
         serializer = GameSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -73,11 +73,19 @@ class BoardViewSet(viewsets.ModelViewSet):
         if(is_mine):
             return Response("game over")
         else:
-            tile = Board(game_id=curr_game, x_coord=request.data["x_coord"],
-                         y_coord=request.data["y_coord"],
-                         value="x",
-                         checked=request.data["disabled"])
-            tile.save()
-            serializer = BoardSerializer(tile, many=False)
-
-            return Response(serializer.data)
+            board = Board.objects.filter(game_id=curr_game,
+                                         x_coord=request.data["x_coord"],
+                                         y_coord=request.data["y_coord"]).first()
+            if(board):
+                board.checked = request.data["disabled"]
+                board.save()
+                serializer = BoardSerializer(board, many=False)
+                return Response(serializer.data)
+            else:
+                tile = Board(game_id=curr_game, x_coord=request.data["x_coord"],
+                             y_coord=request.data["y_coord"],
+                             value="x",
+                             checked=request.data["disabled"])
+                tile.save()
+                serializer = BoardSerializer(tile, many=False)
+                return Response(serializer.data)

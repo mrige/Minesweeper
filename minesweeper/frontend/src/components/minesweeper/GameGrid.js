@@ -3,6 +3,14 @@ import Grid from "@material-ui/core/Grid";
 import GameCell from "./GameCell";
 import axios from "axios";
 
+const styles = {
+  container: {
+    backgroundColor: "#171f2f",
+    paddingTop: "40vh",
+    height: "100vh"
+  }
+};
+
 export class GameGrid extends Component {
   state = {
     board: [],
@@ -26,10 +34,12 @@ export class GameGrid extends Component {
 
   handleClick = (x, y) => {
     console.log({ x: x, y: y });
-
+    const id = this.props.game_id
+      ? this.state.game_id
+      : this.props.match.params.id;
     axios
       .post("api/board/mark_board/", {
-        game_id: "379d2f27-8cb7-40c1-ac3e-1bf56a330ee1",
+        game_id: id,
         x_coord: x,
         y_coord: y,
         disabled: true
@@ -37,7 +47,7 @@ export class GameGrid extends Component {
       .then(res => {
         console.log(res);
         let temp = this.state.board;
-        temp[res.data.x_coord][res.data.y_coord] = res.data.value;
+        temp[res.data.x_coord][res.data.y_coord] = res.data.mine_count;
         this.setState({
           board: [...temp]
         });
@@ -46,22 +56,33 @@ export class GameGrid extends Component {
     console.log(this.props);
     console.log(this.state);
   };
- 
+
   componentDidMount() {
-    axios
-      .get("api/game/" + "379d2f27-8cb7-40c1-ac3e-1bf56a330ee1")
-      .then(res => {
-        const board = this.generate_board(res.data["board_size"]);
-        this.setState({ board: board });
-      });
+    console.log(this.props);
+
+    const id = this.props.game_id
+      ? this.props.game_id
+      : this.props.match.params.id;
+    axios.get("/api/game/" + id + "/").then(res => {
+      console.log({ res: res });
+
+      const board = this.generate_board(res.data["board_size"]);
+      this.setState({ board: board, game_id: this.props.game_id });
+    });
   }
 
   render() {
     return (
-      <div container>
+      <div style={styles.container}>
         {this.state.board.map((n, row) => {
           return (
-            <Grid container direction="row" justify="center" key={row}>
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignContent="center"
+              key={row}
+            >
               {n.map((n, col) => {
                 return (
                   <GameCell
