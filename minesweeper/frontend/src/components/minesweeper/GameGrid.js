@@ -59,7 +59,7 @@ export class GameGrid extends Component {
         game_id: id,
         x_coord: x,
         y_coord: y,
-        is_flagged : false,
+        is_flagged: false,
         disabled: true
       };
     }
@@ -68,28 +68,31 @@ export class GameGrid extends Component {
         game_id: id,
         x_coord: x,
         y_coord: y,
-        is_flagged : true,
+        is_flagged: true,
         disabled: true
       };
     }
 
     console.log(params, e.type);
 
-    axios.post("api/board/mark_board/", params).then(res => {
-      if (res.data === "game over") {
-        this.setState({
-          game_over: true
-        });
-      } else {
-        let temp = this.state.board;
-        temp[res.data.x_coord][res.data.y_coord] = res.data.is_flagged
-          ? "f"
-          : res.data.mine_count;
-        this.setState({
-          board: [...temp]
-        });
-      }
-    });
+    axios
+      .post("api/board/mark_board/", params)
+      .then(res => {
+        if (res.data === "game over") {
+          this.setState({
+            game_over: true
+          });
+        } else {
+          let temp = this.state.board;
+          temp[res.data.x_coord][res.data.y_coord] = res.data.is_flagged
+            ? "f"
+            : res.data.mine_count;
+          this.setState({
+            board: [...temp]
+          });
+        }
+      })
+      .catch(err => console.log(err));
   };
 
   componentDidMount() {
@@ -98,14 +101,20 @@ export class GameGrid extends Component {
       : this.props.match.params.id;
 
     this.props.game_id
-      ? axios.get("/api/game/" + id + "/").then(res => {
-          const board = this.generate_board(res.data["board_size"]);
-          this.setState({ board: board, game_id: this.props.game_id });
-        })
-      : axios.get("/api/board/?game_id=" + id).then(res => {
-          const board = this.generate_board(res.data["board_size"]);
-          this.setState({ board: board, game_id: this.props.game_id });
-        });
+      ? axios
+          .get("/api/game/" + id + "/")
+          .then(res => {
+            const board = this.generate_board(res.data["board_size"]);
+            this.setState({ board: board, game_id: this.props.game_id });
+          })
+          .catch(err => console.log(err))
+      : axios
+          .get("/api/board/?game_id=" + id)
+          .then(res => {
+            const board = this.generate_board(res.data["board_size"]);
+            this.setState({ board: board, game_id: this.props.game_id });
+          })
+          .catch(err => console.log(err));
   }
 
   render() {

@@ -32,11 +32,14 @@ export class Game extends Component {
   onSubmit = e => {
     e.preventDefault();
     const { size } = this.state;
-    axios.post("api/game/create_game/", { board_size: size }).then(res => {
-      console.log(res);
+    axios
+      .post("api/game/create_game/", { board_size: size })
+      .then(res => {
+        console.log(res);
 
-      this.setState({ play: true, game_id: res.data.game_id });
-    });
+        this.setState({ play: true, game_id: res.data.game_id });
+      })
+      .catch(err => console.log(err));
   };
 
   handleChange = event => {
