@@ -7,7 +7,7 @@ const GameCell = props => {
       onContextMenu={props.handleClick}
       onClick={props.handleClick}
       variant="contained"
-      color="secondary"
+      color={props.disable ? "primary" : "secondary"}
       size="small"
       style={{
         maxWidth: "30px",
@@ -15,9 +15,10 @@ const GameCell = props => {
         minWidth: "30px",
         minHeight: "30px",
         border: "1px solid"
+
       }}
       disabled={props.disable}
-      disableElevation
+      contextMenu={props.disable.toString()}
     >
       {props.value}
     </Button>
