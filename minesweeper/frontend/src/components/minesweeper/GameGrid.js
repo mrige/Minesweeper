@@ -96,6 +96,8 @@ export class GameGrid extends Component {
   };
 
   componentDidMount() {
+    console.log(this.props);
+     // need to fix loading previous game values
     const id = this.props.game_id
       ? this.props.game_id
       : this.props.match.params.id;
@@ -109,10 +111,10 @@ export class GameGrid extends Component {
           })
           .catch(err => console.log(err))
       : axios
-          .get("/api/board/?game_id=" + id)
+          .get("/api/game/" + id + "/")
           .then(res => {
             const board = this.generate_board(res.data["board_size"]);
-            this.setState({ board: board, game_id: this.props.game_id });
+            this.setState({ board: board, game_id: id });
           })
           .catch(err => console.log(err));
   }
@@ -151,9 +153,7 @@ export class GameGrid extends Component {
             disablePortal
             disableEnforceFocus
             disableAutoFocus
-            open
-            aria-labelledby="server-modal-title"
-            aria-describedby="server-modal-description"
+            ope
           >
             <div style={styles.paper}>
               <h2>Game Over</h2>
