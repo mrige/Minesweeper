@@ -17,7 +17,6 @@ const GameCell = props => {
         border: "1px solid"
 
       }}
-      disabled={props.disable}
       contextMenu={props.disable.toString()}
     >
       {props.value}
