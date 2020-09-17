@@ -38,18 +38,13 @@ class GameViewSet(viewsets.ModelViewSet):
 
 class BoardViewSet(viewsets.ModelViewSet):
     queryset = Board.objects.all()
+
     permission_classes = [
         permissions.AllowAny
     ]
     serializer_class = BoardSerializer
 
     lookup_field = 'game_id'
-
-    def get(self, request, game_id=None):
-        print(game_id)
-        if(game_id):
-            serializer = BoardSerializer(self.queryset, many=True)
-            return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
     def get_board(self, request, game_id=None):

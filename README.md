@@ -2,6 +2,10 @@
 
 ## Instructions
 
-1. cd minesweeper
+1. run 'npm run build'
 
-2. run 'python manage.py runserver'
+2. cd minesweeper
+
+3. run 'python manage.py migrate'
+
+4. run 'python manage.py runserver'
