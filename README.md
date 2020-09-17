@@ -2,8 +2,10 @@
 
 ## Instructions
 
-1. In the root run 'npm run dev'
+1. run 'npm run build'
 
-2. In the jango app run  'python migrate.py runserver'
+2. cd minesweeper
 
-## LATEST CODE IS IN DEVELOP BRANCH
+3. run 'python manage.py migrate'
+
+4. run 'python manage.py runserver'

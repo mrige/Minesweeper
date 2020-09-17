@@ -88,7 +88,7 @@ class BoardViewSet(viewsets.ModelViewSet):
                 if(is_flagged):
                     board.is_flagged = is_flagged
                 else:
-                    board.checked = request.data["disabled"]
+                    board.checked = request.data["checked"]
                     board.is_flagged = is_flagged
                 board.save()
                 serializer = BoardSerializer(board, many=False)
@@ -97,7 +97,7 @@ class BoardViewSet(viewsets.ModelViewSet):
                 tile = Board(game_id=curr_game, x_coord=request.data["x_coord"],
                              y_coord=request.data["y_coord"],
                              value="x",
-                             checked=request.data["disabled"])
+                             checked=request.data["checked"])
                 tile.save()
                 serializer = BoardSerializer(tile, many=False)
                 return Response(serializer.data)
